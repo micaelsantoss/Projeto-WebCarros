@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { FiLogIn, FiUser } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/authContext";
 
 export function Header(){
-    const signed = false;
-    const loadingAuth = false;
+    const { signed, loadingAuth, profile} = useContext(AuthContext);
+    console.log(profile);
 
     return(
         <div className="bg-white w-full flex items-center justify-center h-16 drop-shadow mb-4 ">
@@ -14,6 +16,7 @@ export function Header(){
 
                 {!loadingAuth && signed && (
                     <Link to={"/dashboard"}>
+                        <p className="text-black">{profile?.name}</p>
                         <div className="border rounded-full p-1 cursor-pointer">
                             <FiUser size={24} color="#000"/>
                         </div>
@@ -21,7 +24,7 @@ export function Header(){
                 )}
 
                 {!loadingAuth && !signed && (
-                    <Link to={"/dashboard"}>
+                    <Link to={"/login"}>
                         <div className="cursor-pointer flex gap-2 bg-red-600 px-2 py-1 rounded">
                             <p className="font-semibold">Entrar</p>
                             <FiLogIn size={24} color="#000"/>
