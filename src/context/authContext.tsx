@@ -41,7 +41,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   }
 
   useEffect(() => {
-    // 1Busca sessão existente
+    // Busca sessão existente
     async function loadUser(){
         await supabase.auth.getUser().then(({ data }) => {
         setUser(data.user);

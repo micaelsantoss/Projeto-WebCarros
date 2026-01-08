@@ -1,11 +1,18 @@
 import { useContext } from "react";
-import { FiLogIn, FiUser } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
+import { Link, Navigate } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
+import { supabase } from "../../services/supabaseConnection";
 
 export function Header(){
     const { signed, loadingAuth, profile} = useContext(AuthContext);
     console.log(profile);
+
+    async function logOut(){
+        await supabase.auth.signOut();
+
+        <Navigate to={"/login"}/>
+    }
 
     return(
         <div className="bg-white w-full flex items-center justify-center h-16 drop-shadow mb-4 ">
@@ -15,10 +22,16 @@ export function Header(){
                 </Link>
 
                 {!loadingAuth && signed && (
-                    <Link to={"/dashboard"}>
-                        <p className="text-black">{profile?.name}</p>
+                    <Link to={"/dashboard"} className="flex items-center gap-5">
                         <div className="border rounded-full p-1 cursor-pointer">
                             <FiUser size={24} color="#000"/>
+                        </div>
+                        <div 
+                            onClick={() => logOut()}
+                            className="flex gap-3 bg-red-600 px-3 py-1 rounded"
+                        >
+                            <p className="bold">Sair</p>
+                            <FiLogOut size={24} color="#000"/>
                         </div>
                     </Link>
                 )}

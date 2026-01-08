@@ -5,6 +5,7 @@ import { NewCar } from "./pages/dashboard/newCar";
 import { Dashboard } from "./pages/dashboard";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { PrivateRoute } from "./routes/privateRoute";
 
 export const router = createBrowserRouter([
     {
@@ -20,11 +21,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/dashboard",
-                element: <Dashboard/>
+                element: <PrivateRoute><Dashboard/></PrivateRoute>
             },
             {
                 path: "/dashboard/newcar",
-                element: <NewCar/>
+                element: <PrivateRoute><NewCar/></PrivateRoute>
             }
         ]
     },
