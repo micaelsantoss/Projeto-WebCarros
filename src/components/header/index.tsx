@@ -5,8 +5,7 @@ import { AuthContext } from "../../context/authContext";
 import { supabase } from "../../services/supabaseConnection";
 
 export function Header(){
-    const { signed, loadingAuth, profile} = useContext(AuthContext);
-    console.log(profile);
+    const { signed, loadingAuth } = useContext(AuthContext);
 
     async function logOut(){
         await supabase.auth.signOut();

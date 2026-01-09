@@ -1,7 +1,54 @@
+import { useEffect, useState } from "react";
 import { Container } from "../../components/container";
 import { PanelHeader } from "../../components/panelHeader";
+import { supabase } from "../../services/supabaseConnection";
+import { Link } from "react-router-dom";
+
+interface PostProps{
+    id: string;
+    user_id: string;
+    name: string;
+    model: string;
+    year: string;
+    km: string;
+    price: string;
+    city: string;
+    color: string;
+    whatsapp: string;
+    description: string;
+    images: object;
+    created_at: Date;
+}
 
 export function Home(){
+    const [ postCar, setPostCar ] = useState<PostProps[]>([]);
+
+    useEffect(() => {
+        async function loadPosts(){
+            const { data, error } = await supabase
+            .from("posts")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+            if(error){
+                console.error(error);
+                return;
+            }
+
+            setPostCar(data);
+        }
+
+        loadPosts();
+    }, []);
+
+    function formatDate(date: Date) {
+        return new Date(date).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+        });
+    }
+
     return(
         <Container>
             <PanelHeader/>
@@ -20,27 +67,38 @@ export function Home(){
             </div>
 
             <main className="w-full max-w-[300px] md:max-w-2xl lg:max-w-5xl mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-15">
-                <section className="w-full bg-white rounded-lg hover:scale-105 transition-all">
-                    <img 
-                        src="https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2023/12/BMW-320i-made-in-Brazil.jpg?w=1200&h=900&crop=1" 
-                        alt="Imagem do carro" 
-                        className="w-full rounded-lg mb-2 max-h-72"
-                    />
-                    <p className="font-bold mt-1 mb-2 px-2">BMW 320i</p>
+                
+                {postCar.map((car) => (
+                    <Link key={car.id} to={`/car/${car.id}`}>
+                        <section 
+                            className="w-full bg-white rounded-lg hover:scale-105 transition-all"
+                        >
+                            <img 
+                                src={car.images[0].url} 
+                                alt={car.images[0].name} 
+                                className="w-full rounded-lg mb-2 h-60 object-cover"
+                            />
+                            <p className="font-bold mt-1 mb-2 px-2">{car.name}</p>
 
-                    <div className="flex flex-col px-2">
-                        <span className="text-zinc-700 mb-6">Ano 2016/2016 | 23.000 km</span>
-                        <strong className="text-black font-medium text-xl">R$ 190.000</strong>
-                    </div>
+                            <div className="flex flex-col px-2">
+                                <span className="text-zinc-700 mb-6">{car.year} | {car.km} km</span>
+                                <strong className="text-black font-medium text-xl">R$ {car.price}</strong>
+                            </div>
 
-                    <div className="w-full h-px bg-slate-300 my-2"></div>
+                            <div className="w-full h-px bg-slate-300 my-2"></div>
 
-                    <div className="px-2 pb-2">
-                        <span className="text-zinc-700">
-                            Uberlândia - MG
-                        </span>
-                    </div>
-                </section>
+                            <div className="px-2 pb-2 flex flex-col">
+                                <span className="text-zinc-700">
+                                    {car.city}
+                                </span>
+                                <span className="text-zinc-700 flex gap-3">
+                                    <p>Data de postagem: </p>
+                                    {formatDate(car.created_at)}
+                                </span>
+                            </div>
+                        </section>
+                    </Link>
+                ))}
                 
             </main>
         </Container>

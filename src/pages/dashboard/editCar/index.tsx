@@ -5,10 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Input } from "../../../components/input";
-import { useContext, useState, type ChangeEvent } from "react";
+import { useContext, useEffect, useState, type ChangeEvent } from "react";
 import { AuthContext } from "../../../context/authContext";
 import { v4 as uuidV4 } from "uuid"
 import { supabase } from "../../../services/supabaseConnection";
+import { useParams } from "react-router-dom";
 
 const schema = z.object({
     name: z.string().nonempty("O nome é veículo obrigatório"),
@@ -34,13 +35,74 @@ interface ImageProps{
     path: string;
 }
 
-export function NewCar(){
+interface PostProps{
+    id: string;
+    user_id: string;
+    name: string;
+    model: string;
+    year: string;
+    km: string;
+    price: string;
+    city: string;
+    color: string;
+    whatsapp: string;
+    description: string;
+    images: object;
+    created_at: Date;
+}
+
+export function EditCar(){
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
         mode: "onChange"
     });
     const { profile } = useContext(AuthContext);
     const [ images, setImages ] = useState<ImageProps[]>([]);
+    const { id } = useParams<{ id: string }>();
+    const [ postCar, setPostCar ] = useState<PostProps[]>([]);
+
+    useEffect(() => {
+        async function loadCar(){
+            const { data, error } = await supabase
+            .from("posts")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+            if(error){
+                console.error(error);
+                return;
+            }
+
+            setPostCar(data);
+
+            // Preenche o formulário
+            reset({
+            name: data.name,
+            model: data.model,
+            year: data.year,
+            km: data.km,
+            price: data.price,
+            city: data.city,
+            color: data.color,
+            whatsapp: data.whatsapp,
+            description: data.description,
+            });
+
+            // Carrega imagens já existentes
+            setImages(
+            data.images.map((img: any) => ({
+                id: img.id,
+                name: img.name,
+                previewUrl: img.url,
+                url: img.url,
+                path: img.path,
+            }))
+            );
+        }
+
+        loadCar();
+    }, [id, reset]);
 
     async function onSubmit(data: FormData){
         if(images.length === 0){
@@ -64,7 +126,7 @@ export function NewCar(){
 
         const { error } = await supabase
         .from("posts")
-        .insert([
+        .update([
             {
                 user_id: profile?.id,
                 name: data.name,
@@ -78,17 +140,17 @@ export function NewCar(){
                 description: data.description,
                 images: carListImages
             }
-        ]);
+        ])
+        .eq("id", id);
 
         if (error) {
-            console.error("Erro ao salvar anúncio:", error);
-            alert("Erro ao salvar anúncio");
+            console.error("Erro ao atualizar anúncio:", error);
+            alert("Erro ao atualizar anúncio");
             return;
         }
 
-        alert("Anúncio cadastrado com sucesso!");
-        reset();
-        setImages([]);
+        alert("Anúncio atualizado com sucesso!");
+    
     }
 
     async function handleFile(e: ChangeEvent<HTMLInputElement>){
@@ -318,7 +380,7 @@ export function NewCar(){
                         type="submit"
                         className="w-full rounded-lg font-bold text-white bg-zinc-800 h-10 cursor-pointer hover:bg-zinc-600 transition-all"
                     >
-                        Cadastrar
+                        Atualizar Anúncio
                     </button>
                 </form>
             </div>
