@@ -30,7 +30,7 @@ export function Header(){
                             onClick={() => logOut()}
                             className="flex gap-3 bg-red-600 px-3 py-1 rounded"
                         >
-                            <p className="bold">Sair</p>
+                            <p className="font-bold">Sair</p>
                             <FiLogOut size={24} color="#000"/>
                         </div>
                     </Link>

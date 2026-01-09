@@ -1,9 +1,14 @@
 import { Container } from "../../components/container";
+import { PanelHeader } from "../../components/panelHeader";
 
 export function Home(){
     return(
         <Container>
-            <div className="bg-white w-full max-w-3xl p-4 rounded-lg mx-auto flex justify-center items-center gap-4">
+            <PanelHeader/>
+
+            <h1 className="text-center text-2xl font-bold mt-4 mb-5 lg:text-4xl">Carros novos e usados em todo o Brasil</h1>
+
+            <div className="bg-white w-full max-w-3xl p-4 rounded-lg mx-auto flex justify-center items-center gap-4 mb-10">
                 <input 
                     className="bg-white rounded px-2 py-1 outline-0 border border-zinc-400 w-full max-w-xl"
                     type="text" 
@@ -14,9 +19,7 @@ export function Home(){
                 </button>
             </div>
 
-            <h1 className="text-center text-2xl font-bold mt-4 mb-5 lg:text-4xl">Carros novos e usados em todo o Brasil</h1>
-
-            <main className="w-full max-w-[300px] md:max-w-2xl lg:max-w-5xl mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <main className="w-full max-w-[300px] md:max-w-2xl lg:max-w-5xl mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-15">
                 <section className="w-full bg-white rounded-lg hover:scale-105 transition-all">
                     <img 
                         src="https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2023/12/BMW-320i-made-in-Brazil.jpg?w=1200&h=900&crop=1" 
