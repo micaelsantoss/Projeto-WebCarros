@@ -26,7 +26,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-interface ImageProps{
+export interface ImageProps{
     id: string;
     name: string;
     previewUrl: string;
@@ -146,7 +146,6 @@ export function NewCar(){
     }
 
     async function handleDelete(image: ImageProps){
-        console.log(image.path)
         const { error } = await supabase.storage
         .from("car-images")
         .remove([image.path]);

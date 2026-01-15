@@ -5,6 +5,7 @@ import { supabase } from "../../services/supabaseConnection";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { FiEdit, FiTrash } from "react-icons/fi";
+import type { ImageProps } from "./newCar";
 
 interface PostProps{
     id: string;
@@ -53,7 +54,31 @@ export function Dashboard(){
         });
     }
 
-    async function handleDelete(carId: string){
+    async function handleDelete(carId: string, image: ImageProps){
+        const { data: post, error: fetchError } = await supabase
+            .from("posts")
+            .select("images")
+            .eq("id", carId)
+            .single();
+
+        if(fetchError){
+            console.error("Erro ao buscar anuncio:", fetchError);
+            return;
+        }
+
+        if(post?.images?.length > 0){
+            const imagePaths = post.images.map((img: ImageProps) => img.path);
+
+            const { error: storageError } = await supabase.storage
+                .from("car-images")
+                .remove(imagePaths);
+
+            if(storageError){
+                console.error("Erro ao deletar imagens: ", storageError);
+                return;
+            }
+        }
+
         const { error } = await supabase
             .from("posts")
             .delete()
@@ -64,6 +89,10 @@ export function Dashboard(){
             alert("Erro ao deletar anúncio");
             return;
         }
+
+        await supabase.storage
+        .from("car-images")
+        .remove([image.path]);
 
         alert("Anúncio deletado com sucesso!"); 
 
@@ -87,7 +116,7 @@ export function Dashboard(){
                             <Link to={`/dashboard/editcar/${car.id}`}>
                                 <FiEdit size={28} color="#000" className="cursor-pointer"/>
                             </Link>
-                            <FiTrash size={28} color="#000" className="cursor-pointer" onClick={() => handleDelete(car.id)}/>
+                            <FiTrash size={28} color="#000" className="cursor-pointer" onClick={() => handleDelete(car.id, car.images)}/>
                         </div>
 
                         <img 

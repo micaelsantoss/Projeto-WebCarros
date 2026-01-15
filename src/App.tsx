@@ -6,8 +6,8 @@ import { Dashboard } from "./pages/dashboard";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
 import { PrivateRoute } from "./routes/privateRoute";
-import { Car } from "./pages/car";
 import { EditCar } from "./pages/dashboard/editCar";
+import { CarDetail } from "./pages/carDetail";
 
 export const router = createBrowserRouter([
     {
@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/car/:id",
-                element: <Car/>
+                element: <CarDetail/>
             },
         ]
     },
