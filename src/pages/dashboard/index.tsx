@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import type { ImageProps } from "./newCar";
+import toast from "react-hot-toast";
 
 interface PostProps{
     id: string;
@@ -28,23 +29,26 @@ export function Dashboard(){
     const { profile } = useContext(AuthContext);
 
     useEffect(() => {
-        async function loadPosts(){
-            const { data, error } = await supabase
-            .from("posts")
-            .select("*")
-            .eq("user_id", profile?.id)
-            .order("created_at", { ascending: false });
+        if (!profile?.id) return;
+        
+        loadPosts();
+    }, [profile]);
 
-            if(error){
-                console.error(error);
-                return;
-            }
+    async function loadPosts(){
+        const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("user_id", profile?.id)
+        .order("created_at", { ascending: false });
 
-            setPostCar(data);
+        if(error){
+            console.error(error);
+            return;
         }
 
-        loadPosts();
-    }, [handleDelete]);
+        setPostCar(data);
+    }
+
 
     function formatDate(date: Date) {
         return new Date(date).toLocaleDateString("pt-BR", {
@@ -86,7 +90,7 @@ export function Dashboard(){
 
         if (error) {
             console.error("Erro ao deletar carro:", error);
-            alert("Erro ao deletar anúncio");
+            toast.error("Erro ao deletar anúncio");
             return;
         }
 
@@ -94,7 +98,7 @@ export function Dashboard(){
         .from("car-images")
         .remove([image.path]);
 
-        alert("Anúncio deletado com sucesso!"); 
+        toast.success("Anúncio deletado com sucesso!"); 
 
     }
 
@@ -145,6 +149,10 @@ export function Dashboard(){
                     </section>
                     
                 ))}
+
+                {postCar.length === 0 && (
+                    <p className="text-center col-span-3 text-xl font-medium">Nenhum carro cadastrado.</p>
+                )}
                 
             </main>
         </Container>

@@ -9,6 +9,7 @@ import { useContext, useState, type ChangeEvent } from "react";
 import { AuthContext } from "../../../context/authContext";
 import { v4 as uuidV4 } from "uuid"
 import { supabase } from "../../../services/supabaseConnection";
+import toast from "react-hot-toast";
 
 const schema = z.object({
     name: z.string().nonempty("O nome é veículo obrigatório"),
@@ -44,12 +45,12 @@ export function NewCar(){
 
     async function onSubmit(data: FormData){
         if(images.length === 0){
-            alert("Adicione alguma imagem para esse anúncio!");
+            toast.success("Adicione alguma imagem para esse anúncio!");
             return;
         }
 
         if (images.length >= 6) {
-            alert("Máximo de 6 imagens por anúncio");
+            toast.error("Máximo de 6 imagens por anúncio");
             return;
         }
 
@@ -67,7 +68,7 @@ export function NewCar(){
         .insert([
             {
                 user_id: profile?.id,
-                name: data.name,
+                name: data.name.toUpperCase(),
                 model: data.model,
                 year: data.year,
                 km: data.km,
@@ -82,11 +83,11 @@ export function NewCar(){
 
         if (error) {
             console.error("Erro ao salvar anúncio:", error);
-            alert("Erro ao salvar anúncio");
+            toast.error("Erro ao salvar anúncio");
             return;
         }
 
-        alert("Anúncio cadastrado com sucesso!");
+        toast.success("Anúncio cadastrado com sucesso!");
         reset();
         setImages([]);
     }
@@ -98,7 +99,7 @@ export function NewCar(){
             if(image.type === "image/jpeg" || image.type === "image/png" || image.type === "image/webp"){
                 await handleUpload(image);
             }else{
-                alert("Enviar apenas imagem do tipo png ou jpeg");
+                toast.error("Enviar apenas imagem do tipo png, jpeg ou webp");
                 return;
             }
         }
@@ -123,7 +124,7 @@ export function NewCar(){
             });
 
         if (error) {
-            alert("Erro ao fazer upload da imagem");
+            toast.error("Erro ao fazer upload da imagem");
             console.error(error);
             return;
         }

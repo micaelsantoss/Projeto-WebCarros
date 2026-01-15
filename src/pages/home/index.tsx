@@ -3,6 +3,7 @@ import { Container } from "../../components/container";
 import { PanelHeader } from "../../components/panelHeader";
 import { supabase } from "../../services/supabaseConnection";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 interface PostProps{
     id: string;
@@ -22,12 +23,41 @@ interface PostProps{
 
 export function Home(){
     const [ postCar, setPostCar ] = useState<PostProps[]>([]);
+    const [ input, setInput ] = useState('');
 
     useEffect(() => {
-        async function loadPosts(){
-            const { data, error } = await supabase
+        
+        loadPosts();
+
+    }, []);
+
+    async function loadPosts(){
+        const { data, error } = await supabase
             .from("posts")
             .select("*")
+            .order("created_at", { ascending: false });
+
+        if(error){
+            console.error(error);
+            return;
+        }
+
+        setPostCar(data);
+    }
+
+
+    async function handleSearchCar(){
+        if(input === ''){
+            toast.error("Campo vazio, por favor digite algo.")
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from("posts")
+            .select("*")
+            .or(
+                `name.ilike.%${input}%,model.ilike.%${input}%,year.ilike.%${input}%`
+            )
             .order("created_at", { ascending: false });
 
             if(error){
@@ -36,10 +66,7 @@ export function Home(){
             }
 
             setPostCar(data);
-        }
-
-        loadPosts();
-    }, []);
+    }
 
     function formatDate(date: Date) {
         return new Date(date).toLocaleDateString("pt-BR", {
@@ -47,6 +74,11 @@ export function Home(){
             month: "2-digit",
             year: "numeric",
         });
+    }
+
+    function reloadPage(){
+        setInput('');
+        loadPosts();
     }
 
     return(
@@ -59,11 +91,25 @@ export function Home(){
                 <input 
                     className="bg-white rounded px-2 py-1 outline-0 border border-zinc-400 w-full max-w-xl"
                     type="text" 
-                    placeholder="Digite o nome do carro..."
+                    placeholder="Digite o nome, modelo ou ano do carro desejado..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
                 />
-                <button className="bg-red-600 px-4 rounded py-1 font-semibold text-white hover:bg-red-900 cursor-pointer">
+
+                {input && (
+                    <button 
+                        onClick={reloadPage}
+                        className="cursor-pointer"
+                    >X</button>
+                )}
+
+                <button 
+                    className="bg-red-600 px-4 rounded py-1 font-semibold text-white hover:bg-red-900 cursor-pointer"
+                    onClick={handleSearchCar}
+                >
                     Buscar
                 </button>
+
             </div>
 
             <main className="w-full max-w-[300px] md:max-w-2xl lg:max-w-5xl mx-auto grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-15">
@@ -99,6 +145,10 @@ export function Home(){
                         </section>
                     </Link>
                 ))}
+
+                {postCar.length === 0 && (
+                    <p className="text-center col-span-3 text-xl font-medium">Nenhum carro encontrado.</p>
+                )}
                 
             </main>
         </Container>

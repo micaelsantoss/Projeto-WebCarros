@@ -10,6 +10,7 @@ import { AuthContext } from "../../../context/authContext";
 import { v4 as uuidV4 } from "uuid"
 import { supabase } from "../../../services/supabaseConnection";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const schema = z.object({
     name: z.string().nonempty("O nome é veículo obrigatório"),
@@ -78,7 +79,7 @@ export function EditCar(){
 
             // Preenche o formulário
             reset({
-            name: data.name,
+            name: data.name.toUpperCase(),
             model: data.model,
             year: data.year,
             km: data.km,
@@ -106,12 +107,12 @@ export function EditCar(){
 
     async function onSubmit(data: FormData){
         if(images.length === 0){
-            alert("Adicione alguma imagem para esse anúncio!");
+            toast.error("Adicione alguma imagem para esse anúncio!");
             return;
         }
 
         if (images.length >= 6) {
-            alert("Máximo de 6 imagens por anúncio");
+            toast.error("Máximo de 6 imagens por anúncio");
             return;
         }
 
@@ -145,11 +146,11 @@ export function EditCar(){
 
         if (error) {
             console.error("Erro ao atualizar anúncio:", error);
-            alert("Erro ao atualizar anúncio");
+            toast.error("Erro ao atualizar anúncio");
             return;
         }
 
-        alert("Anúncio atualizado com sucesso!");
+        toast.success("Anúncio atualizado com sucesso!");
     
     }
 

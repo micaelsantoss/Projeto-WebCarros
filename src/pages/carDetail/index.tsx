@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../services/supabaseConnection";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container } from "../../components/container";
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -23,6 +23,7 @@ interface PostProps{
 export function CarDetail(){
     const [ car, setCar ] = useState<PostProps>();
     const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function loadCar(){
@@ -34,6 +35,8 @@ export function CarDetail(){
             
             if(error){
                 console.error("Erro ao carregar veículo:", error);
+            
+                navigate("/");
                 return;
             }
 
@@ -108,7 +111,11 @@ export function CarDetail(){
                         <p>{car.whatsapp}</p>
                     </div>
 
-                    <button className="bg-green-700 text-white font-bold p-3 rounded-xl cursor-pointer hover:scale-101 transition-all">Entrar em contato</button>
+                    <a 
+                        className="bg-green-700 text-white font-bold p-3 rounded-xl cursor-pointer hover:scale-101 transition-all text-center"
+                        href={`https://wa.me/55${car.whatsapp}?text=Olá, tenho interesse no veículo ${car.name} do site WebCarros!`}
+                        target="_blank"
+                    >Entrar em contato</a>
                </div>
             )}
         </Container>
