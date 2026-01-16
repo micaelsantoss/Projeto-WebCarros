@@ -101,10 +101,6 @@ export function Dashboard(){
             return;
         }
 
-        await supabase.storage
-        .from("car-images")
-        .remove([image.path]);
-
         toast.success("Anúncio deletado com sucesso!"); 
 
     }

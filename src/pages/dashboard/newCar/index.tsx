@@ -306,7 +306,6 @@ export function NewCar(){
                         <p className="font-bold">Descrição:</p>
                         <textarea
                             className="border w-full rounded-md h-24 px-2 outline-0 border-gray-400"
-                            name="description"
                             id="description"
                             {...register("description")}
                             placeholder="Digite a descrição do carro..."

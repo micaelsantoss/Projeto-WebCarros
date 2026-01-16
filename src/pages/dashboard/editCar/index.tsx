@@ -36,22 +36,6 @@ interface ImageProps{
     path: string;
 }
 
-interface PostProps{
-    id: string;
-    user_id: string;
-    name: string;
-    model: string;
-    year: string;
-    km: string;
-    price: string;
-    city: string;
-    color: string;
-    whatsapp: string;
-    description: string;
-    images: object;
-    created_at: Date;
-}
-
 export function EditCar(){
     const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -60,7 +44,6 @@ export function EditCar(){
     const { profile } = useContext(AuthContext);
     const [ images, setImages ] = useState<ImageProps[]>([]);
     const { id } = useParams<{ id: string }>();
-    const [ postCar, setPostCar ] = useState<PostProps[]>([]);
 
     useEffect(() => {
         async function loadCar(){
@@ -74,8 +57,6 @@ export function EditCar(){
                 console.error(error);
                 return;
             }
-
-            setPostCar(data);
 
             // Preenche o formulário
             reset({
@@ -209,7 +190,6 @@ export function EditCar(){
     }
 
     async function handleDelete(image: ImageProps){
-        console.log(image.path)
         const { error } = await supabase.storage
         .from("car-images")
         .remove([image.path]);
@@ -369,7 +349,6 @@ export function EditCar(){
                         <p className="font-bold">Descrição:</p>
                         <textarea
                             className="border w-full rounded-md h-24 px-2 outline-0 border-gray-400"
-                            name="description"
                             id="description"
                             {...register("description")}
                             placeholder="Digite a descrição do carro..."
