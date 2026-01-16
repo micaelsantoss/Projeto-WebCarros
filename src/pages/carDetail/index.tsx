@@ -3,6 +3,10 @@ import { supabase } from "../../services/supabaseConnection";
 import { useNavigate, useParams } from "react-router-dom";
 import { Container } from "../../components/container";
 import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 
 interface PostProps{
     id: string;
@@ -16,8 +20,16 @@ interface PostProps{
     color: string;
     whatsapp: string;
     description: string;
-    images: object;
+    images: ImageProps[];
     created_at: Date;
+}
+
+export interface ImageProps {
+  id: string;
+  name: string;
+  url: string;
+  previewUrl: string;
+  path: string;
 }
 
 export function CarDetail(){
