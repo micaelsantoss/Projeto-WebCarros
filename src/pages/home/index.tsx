@@ -17,8 +17,16 @@ interface PostProps{
     color: string;
     whatsapp: string;
     description: string;
-    images: object;
+    images: ImageProps[];
     created_at: Date;
+}
+
+export interface ImageProps {
+  id: string;
+  name: string;
+  url: string;
+  previewUrl: string;
+  path: string;
 }
 
 export function Home(){

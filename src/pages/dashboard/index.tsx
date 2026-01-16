@@ -5,7 +5,6 @@ import { supabase } from "../../services/supabaseConnection";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { FiEdit, FiTrash } from "react-icons/fi";
-import type { ImageProps } from "./newCar";
 import toast from "react-hot-toast";
 
 interface PostProps{
@@ -20,8 +19,16 @@ interface PostProps{
     color: string;
     whatsapp: string;
     description: string;
-    images: object;
+    images: ImageProps[];
     created_at: Date;
+}
+
+export interface ImageProps {
+  id: string;
+  name: string;
+  url: string;
+  previewUrl: string;
+  path: string;
 }
 
 export function Dashboard(){
@@ -58,7 +65,7 @@ export function Dashboard(){
         });
     }
 
-    async function handleDelete(carId: string, image: ImageProps){
+    async function handleDelete(carId: string){
         const { data: post, error: fetchError } = await supabase
             .from("posts")
             .select("images")
@@ -120,7 +127,7 @@ export function Dashboard(){
                             <Link to={`/dashboard/editcar/${car.id}`}>
                                 <FiEdit size={28} color="#000" className="cursor-pointer"/>
                             </Link>
-                            <FiTrash size={28} color="#000" className="cursor-pointer" onClick={() => handleDelete(car.id, car.images)}/>
+                            <FiTrash size={28} color="#000" className="cursor-pointer" onClick={() => handleDelete(car.id)}/>
                         </div>
 
                         <img 
